@@ -8,7 +8,6 @@ public class Main {
 
     Connection connection;
     Statement statement;
-    PreparedStatement pStatement;
     Scanner scan = new Scanner(System.in);
     boolean run = true;
 
