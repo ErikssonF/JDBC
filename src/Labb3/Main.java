@@ -55,7 +55,9 @@ public class Main {
     }
 
     private void menuPrint() {
-        System.out.println("Vad vill du göra?" + "\n" +
+
+        System.out.println(
+                "\n"+"Vad vill du göra?" + "\n" +
                 "1. Lägga till artist" + "\n" +
                 "2. Ta bort artist" + "\n" +
                 "3. Updatera artist som finns i listan" + "\n" +
@@ -136,11 +138,11 @@ public class Main {
 
         System.out.println("Ange förnamn");
         checkIfInputIsString();
-        scan.nextLine();
         String firstName = scan.nextLine();
 
         System.out.println("Ange efternamn");
         checkIfInputIsString();
+        scan.nextLine();
         String lastName = scan.nextLine();
 
         System.out.println("Ange ålder");
