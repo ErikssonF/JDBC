@@ -83,15 +83,15 @@ public class Main {
         System.out.println("Ange förnamn: ");
 
         checkIfInputIsString();
-        scan.nextLine();
         String firstName = scan.nextLine();
+        scan.nextLine();
 
-        checkIfInputIsString();
         System.out.println("Ange efternamn: ");
+        checkIfInputIsString();
         String lastName = scan.nextLine();
 
-        checkIfInputIsInteger();
         System.out.println("Ange ålder: ");
+        checkIfInputIsInteger();
         int age = scan.nextInt();
 
         statement.executeUpdate("INSERT INTO artist (first_name,last_name,age) VALUES ('"
