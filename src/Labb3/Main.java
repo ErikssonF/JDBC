@@ -6,14 +6,18 @@ import java.util.Scanner;
 
 public class Main {
 
-    Connection connection;
-    Statement statement;
-    Scanner scan = new Scanner(System.in);
+    private Statement statement;
+    private final Scanner scan = new Scanner(System.in);
+    private String firstName;
+    private String lastName;
+    private int age;
+    private int artistId;
+    private ResultSet resultSet;
     boolean run = true;
 
     {
         try {
-            connection = DriverManager
+            Connection connection = DriverManager
                     .getConnection("jdbc:mysql://localhost:3306/labb3",
                             "root",
                             "G5dj8vsa123!");
@@ -38,34 +42,35 @@ public class Main {
 
         menuPrint();
 
-        checkIfInputIsInteger();
-        int menuChoice = scan.nextInt();
+        String menuChoice = scan.nextLine();
 
         switch (menuChoice) {
-            case 1 -> add();
-            case 2 -> delete();
-            case 3 -> update();
-            case 4 -> showAll();
-            case 5 -> findById();
-            case 6 -> findByAge();
-            case 7 -> findByName();
-            case 0 -> run = false;
-
+            case "1" -> add();
+            case "2" -> delete();
+            case "3" -> update();
+            case "4" -> showAll();
+            case "5" -> findById();
+            case "6" -> findByAge();
+            case "7" -> findByName();
+            case "0" -> run = false;
+            default -> System.out.println("Felaktig input, försök igen");
         }
     }
 
     private void menuPrint() {
 
         System.out.println(
-                "\n"+"Vad vill du göra?" + "\n" +
-                "1. Lägga till artist" + "\n" +
-                "2. Ta bort artist" + "\n" +
-                "3. Updatera artist som finns i listan" + "\n" +
-                "4. Visa alla artister" + "\n" +
-                "5. Söka på artist via ID" + "\n" +
-                "6. Söka på artist via ålder" + "\n" +
-                "7. Söka på artist via namn" + "\n" +
-                "0. Avsluta");
+                """
+                        Vad vill du göra?
+                        
+                        1. Lägga till artist
+                        2. Ta bort artist
+                        3. Updatera artist som finns i listan
+                        4. Visa alla artister
+                        5. Söka på artist via ID
+                        6. Söka på artist via ålder
+                        7. Söka på artist via namn
+                        0. Avsluta""");
     }
 
 
@@ -76,89 +81,60 @@ public class Main {
                 "last_name VARCHAR(150), " +
                 "age smallint(200), " +
                 "PRIMARY KEY (id) )");
+    }
 
+    private void artistInfoInput() {
+        firstName = checkIfInputIsString("Ange förnamn ");
+        lastName = checkIfInputIsString("Ange efternamn ");
+        age = Integer.parseInt(checkIfInputIsInteger("Ange Ålder "));
+    }
+
+    private String checkIfInputIsInteger(String input) {
+        System.out.println(input);
+        while (!scan.hasNextInt()) {
+            System.out.println("Felaktig input, försök igen");
+            scan.next();
+        }
+        return scan.next();
+    }
+
+    private String checkIfInputIsString(String input) {
+        System.out.println(input);
+        while (scan.hasNextInt()) {
+            System.out.println("Felaktig input, försök igen");
+            scan.next();
+        }
+        return scan.next();
     }
 
     private void add() throws SQLException {
 
-        System.out.println("Ange förnamn: ");
-
-        checkIfInputIsString();
-        String firstName = scan.nextLine();
-        scan.nextLine();
-
-        System.out.println("Ange efternamn: ");
-        checkIfInputIsString();
-        String lastName = scan.nextLine();
-
-        System.out.println("Ange ålder: ");
-        checkIfInputIsInteger();
-        int age = scan.nextInt();
-
+        artistInfoInput();
         statement.executeUpdate("INSERT INTO artist (first_name,last_name,age) VALUES ('"
                 + firstName + "','"
                 + lastName + "','"
                 + age + "')");
     }
 
-    private void checkIfInputIsInteger() {
-
-        while (!scan.hasNextInt()) {
-            System.out.println("Felaktig input, försök igen.");
-            scan.next();
-
-        }
-    }
-
-    private void checkIfInputIsString() {
-
-        while(scan.hasNextInt()) {
-            System.out.println("Felaktig input, försök igen");
-            scan.next();
-        }
-    }
-
     private void delete() throws SQLException {
 
-        System.out.println("Vem vill du ta bort? Ange ID.");
-
-        checkIfInputIsInteger();
-        int artistId = scan.nextInt();
-
+        artistId = Integer.parseInt(checkIfInputIsInteger("Ange ID som du vill ta bort"));
+        artistInfoInput();
         statement.executeUpdate("DELETE FROM artist WHERE id = " + artistId);
     }
 
     private void update() throws SQLException {
 
-        System.out.println("Ange ID för artisten som du vill uppdatera");
-        checkIfInputIsInteger();
-        int id = scan.nextInt();
-
-        printArtistLoop(id);
-
-        System.out.println("Ange förnamn");
-        checkIfInputIsString();
-        String firstName = scan.nextLine();
-
-        System.out.println("Ange efternamn");
-        checkIfInputIsString();
-        scan.nextLine();
-        String lastName = scan.nextLine();
-
-        System.out.println("Ange ålder");
-        checkIfInputIsInteger();
-        int age = scan.nextInt();
-
+        artistId = Integer.parseInt(checkIfInputIsInteger("Ange ID som du vill ändra"));
+        artistInfoInput();
         statement.executeUpdate("UPDATE artist SET first_name = '"
                 + firstName + "', last_name = '"
                 + lastName + "', age = '"
                 + age + "' WHERE id = "
-                + id + ";");
+                + artistId + ";");
     }
 
-    private void printArtistLoop(int id) throws SQLException {
-
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM artist WHERE id = " + id);
+    private void printArtistLoop() throws SQLException {
 
         while (resultSet.next()) {
             System.out.println(resultSet.getInt("id")
@@ -171,70 +147,40 @@ public class Main {
 
     private void showAll() throws SQLException {
 
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM artist;");
-
-        while (resultSet.next()) {
-            System.out.println(resultSet.getInt("id")
-                    + " " + resultSet.getString("first_name")
-                    + " " + resultSet.getString("last_name")
-                    + " " + resultSet.getInt("age"));
-        }
+        resultSet = statement.executeQuery("SELECT * FROM artist;");
+        printArtistLoop();
     }
 
     private void findById() throws SQLException {
 
-        System.out.println("Ange ID: ");
-        checkIfInputIsInteger();
-        int id = scan.nextInt();
+        artistId = Integer.parseInt(checkIfInputIsInteger("Ange ID som du vill ändra"));
 
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM artist WHERE id = " + id);
+        resultSet = statement.executeQuery("SELECT * FROM artist WHERE id = " + artistId);
 
-        while (resultSet.next()) {
-            System.out.println(resultSet.getInt("id")
-                    + " " + resultSet.getString("first_name")
-                    + " " + resultSet.getString("last_name")
-                    + " " + resultSet.getInt("age"));
-        }
+        printArtistLoop();
 
     }
 
     private void findByAge() throws SQLException {
 
-        System.out.println("Ange ålder: ");
-        checkIfInputIsInteger();
-        int ageInput = scan.nextInt();
+        age = Integer.parseInt(checkIfInputIsInteger("Ange ålder som du vill söka på"));
 
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM artist WHERE age = " + ageInput);
+        resultSet = statement.executeQuery("SELECT * FROM artist WHERE age = " + age);
 
-        while (resultSet.next()) {
-            System.out.println(resultSet.getInt("id")
-                    + " " + resultSet.getString("first_name")
-                    + " " + resultSet.getString("last_name")
-                    + " " + resultSet.getInt("age"));
-        }
+        printArtistLoop();
 
     }
 
     private void findByName() throws SQLException {
 
-        System.out.println("Ange förnamn");
-        checkIfInputIsString();
-        scan.nextLine();
-        String firstName = scan.nextLine();
+        firstName = checkIfInputIsString("Ange förnamn");
 
-        System.out.println("Ange efternamn");
-        checkIfInputIsInteger();
-        String lastName = scan.nextLine();
+        lastName = checkIfInputIsString("Ange efternamn");
 
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM artist WHERE first_name = '"
+        resultSet = statement.executeQuery("SELECT * FROM artist WHERE first_name name = '"
                 + firstName + "' AND last_name = '"
                 + lastName + "';");
 
-        while (resultSet.next()) {
-            System.out.println(resultSet.getInt("id")
-                    + " " + resultSet.getString("first_name")
-                    + " " + resultSet.getString("last_name")
-                    + " " + resultSet.getInt("age"));
-        }
+        printArtistLoop();
     }
 }
