@@ -118,7 +118,6 @@ public class Main {
     private void delete() throws SQLException {
 
         artistId = checkIfInputIsInteger("Ange ID som du vill ta bort");
-        artistInfoInput();
         statement.executeUpdate("DELETE FROM artist WHERE id = " + artistId);
     }
 
@@ -152,7 +151,7 @@ public class Main {
 
     private void findById() throws SQLException {
 
-        artistId = checkIfInputIsInteger("Ange ID som du vill ändra");
+        artistId = checkIfInputIsInteger("Ange ID som du vill söka på");
 
         resultSet = statement.executeQuery("SELECT * FROM artist WHERE id = " + artistId);
 
