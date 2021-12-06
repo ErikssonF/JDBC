@@ -175,7 +175,7 @@ public class Main {
 
         lastName = checkIfInputIsString("Ange efternamn");
 
-        resultSet = statement.executeQuery("SELECT * FROM artist WHERE first_name name = '"
+        resultSet = statement.executeQuery("SELECT * FROM artist WHERE first_name = '"
                 + firstName + "' AND last_name = '"
                 + lastName + "';");
 
