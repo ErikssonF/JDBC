@@ -30,7 +30,6 @@ public class Main {
     public static void main(String[] args) throws SQLException {
 
         Main main = new Main();
-
         //main.createTable();
 
         while (main.run) {
@@ -42,17 +41,17 @@ public class Main {
 
         menuPrint();
 
-        String menuChoice = scan.nextLine();
+        int menuChoice = checkIfInputIsInteger(" ");
 
         switch (menuChoice) {
-            case "1" -> add();
-            case "2" -> delete();
-            case "3" -> update();
-            case "4" -> showAll();
-            case "5" -> findById();
-            case "6" -> findByAge();
-            case "7" -> findByName();
-            case "0" -> run = false;
+            case 1 -> add();
+            case 2 -> delete();
+            case 3 -> update();
+            case 4 -> showAll();
+            case 5 -> findById();
+            case 6 -> findByAge();
+            case 7 -> findByName();
+            case 0 -> run = false;
             default -> System.out.println("Felaktig input, försök igen");
         }
     }
@@ -86,16 +85,16 @@ public class Main {
     private void artistInfoInput() {
         firstName = checkIfInputIsString("Ange förnamn ");
         lastName = checkIfInputIsString("Ange efternamn ");
-        age = Integer.parseInt(checkIfInputIsInteger("Ange Ålder "));
+        age = checkIfInputIsInteger("Ange Ålder ");
     }
 
-    private String checkIfInputIsInteger(String input) {
+    private int checkIfInputIsInteger(String input) {
         System.out.println(input);
         while (!scan.hasNextInt()) {
             System.out.println("Felaktig input, försök igen");
             scan.next();
         }
-        return scan.next();
+        return Integer.parseInt(scan.next());
     }
 
     private String checkIfInputIsString(String input) {
@@ -118,14 +117,14 @@ public class Main {
 
     private void delete() throws SQLException {
 
-        artistId = Integer.parseInt(checkIfInputIsInteger("Ange ID som du vill ta bort"));
+        artistId = checkIfInputIsInteger("Ange ID som du vill ta bort");
         artistInfoInput();
         statement.executeUpdate("DELETE FROM artist WHERE id = " + artistId);
     }
 
     private void update() throws SQLException {
 
-        artistId = Integer.parseInt(checkIfInputIsInteger("Ange ID som du vill ändra"));
+        artistId = checkIfInputIsInteger("Ange ID som du vill ändra");
         artistInfoInput();
         statement.executeUpdate("UPDATE artist SET first_name = '"
                 + firstName + "', last_name = '"
@@ -153,7 +152,7 @@ public class Main {
 
     private void findById() throws SQLException {
 
-        artistId = Integer.parseInt(checkIfInputIsInteger("Ange ID som du vill ändra"));
+        artistId = checkIfInputIsInteger("Ange ID som du vill ändra");
 
         resultSet = statement.executeQuery("SELECT * FROM artist WHERE id = " + artistId);
 
@@ -163,7 +162,7 @@ public class Main {
 
     private void findByAge() throws SQLException {
 
-        age = Integer.parseInt(checkIfInputIsInteger("Ange ålder som du vill söka på"));
+        age = checkIfInputIsInteger("Ange ålder som du vill söka på");
 
         resultSet = statement.executeQuery("SELECT * FROM artist WHERE age = " + age);
 
